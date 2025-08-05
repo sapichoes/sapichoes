@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pequenos Sapichões - Matemática Nível 1</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Comic Neue', cursive;
+      background: linear-gradient(135deg, #f1f8e9, #dcedc1);
+      color: #2e7d32;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    header {
+      background: #81c784;
+      padding: 20px;
+      width: 100%;
+      text-align: center;
+      font-size: 2rem;
+      font-family: 'Fredoka One', cursive;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .start-area {
+      margin-top: 80px;
+    }
+    .start-button {
+      padding: 16px 32px;
+      font-size: 1.3rem;
+      border-radius: 30px;
+      border: none;
+      background: #4caf50;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .start-button:hover {
+      background: #388e3c;
+    }
+    #loadingScreen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      height: 100vh;
+    }
+    .loading-bar {
+      width: 300px;
+      height: 20px;
+      background: #c8e6c9;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 20px;
+    }
+    .loading-fill {
+      height: 100%;
+      width: 0%;
+      background: #388e3c;
+      transition: width 0.2s;
+    }
+    .loading-text {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .atividade {
+      display: none;
+      flex-direction: column;
+      max-width: 600px;
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      margin-top: 30px;
+      text-align: center;
+    }
+    .atividade h2 {
+      font-family: 'Fredoka One', cursive;
+      margin-bottom: 20px;
+    }
+    .alternativas button {
+      background: #a5d6a7;
+      border: none;
+      padding: 14px 24px;
+      margin: 10px;
+      border-radius: 15px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .alternativas button:hover {
+      background: #66bb6a;
+      color: white;
+    }
+    .toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .toast {
+      background: #4caf50;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 20px;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      animation: fadeIn 0.3s ease, fadeOut 0.3s ease 3s forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeOut {
+      to { opacity: 0; transform: translateY(20px); }
+    }
+  </style>
+</head>
+<body>
+  <header>Matemática - Nível 1</header>
+
+  <div class="start-area" id="startContainer">
+    <button class="start-button" onclick="startQuiz()">Começar Atividades</button>
+  </div>
+
+  <div id="loadingScreen">
+    <div class="loading-text" id="loadingMessage">Carregando atividades...</div>
+    <div class="loading-bar">
+      <div class="loading-fill" id="barraProgresso"></div>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script>
+    const frases = [
+      "Preparando perguntas divertidas...",
+      "Organizando os desafios...",
+      "Quase pronto...",
+      "Só mais um segundo...",
+      "Vamos começar!"
+    ];
+
+    let atividadeAtual = 1;
+    const corretas = {
+      1: 5, 2: 4, 3: 6, 4: 8, 5: 9, 6: 2, 7: 10, 8: 4, 9: 3, 10: 7
+    };
+
+    function startQuiz() {
+      document.getElementById("startContainer").style.display = "none";
+      document.getElementById("loadingScreen").style.display = "flex";
+      iniciarBarraProgresso();
+    }
+
+    function iniciarBarraProgresso() {
+      const barra = document.getElementById("barraProgresso");
+      const texto = document.getElementById("loadingMessage");
+      let progresso = 0;
+      let etapa = 0;
+
+      const intervalo = setInterval(() => {
+        progresso++;
+        barra.style.width = progresso + "%";
+
+        if (progresso % 20 === 0 && frases[etapa]) {
+          texto.textContent = frases[etapa];
+          etapa++;
+        }
+
+        if (progresso >= 100) {
+          clearInterval(intervalo);
+          document.getElementById("loadingScreen").style.display = "none";
+          mostrarAtividade(1);
+        }
+      }, 100);
+    }
+// acho que e aqui
+    function mostrarAtividade(num) {
+      const atividade = document.getElementById("atividade" + num);
+      if (atividade) atividade.style.display = "flex";
+    }
+
+    function verificar(numero, resposta) {
+      const container = document.getElementById("atividade" + numero);
+      if (resposta === corretas[numero]) {
+        showToast("Muito bem!");
+      } else {
+        showToast("Ops! Tente outra vez.");
+        return;
+      }
+      container.style.display = "none";
+      atividadeAtual++;
+      mostrarAtividade(atividadeAtual);
+    }
+
+    function showToast(mensagem) {
+      const container = document.getElementById("toastContainer");
+      const toast = document.createElement("div");
+      toast.className = "toast";
+      toast.textContent = mensagem;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
+    }
+
+    window.onload = () => {
+      for (let i = 1; i <= 10; i++) {
+        const div = document.createElement("div");
+        div.className = "atividade";
+        div.id = "atividade" + i;
+
+        let pergunta = "";
+        let opcoes = [];
+
+        switch(i) {  // ta com erro nessa prr
+          case 1: pergunta = "Quanto é 2 + 3?"; opcoes = [4,5,6]; break;
+          case 2: pergunta = "Quanto é 6 - 2?"; opcoes = [4,3,5]; break;
+          case 3: pergunta = "Quanto é 3 + 3?"; opcoes = [5,6,7]; break;
+          case 4: pergunta = "Quanto é 4 + 4?"; opcoes = [7,8,9]; break;
+          case 5: pergunta = "Quanto é 5 + 4?"; opcoes = [8,9,10]; break;
+          case 6: pergunta = "Quanto é 3 - 1?"; opcoes = [1,2,3]; break;
+          case 7: pergunta = "Quanto é 5 + 5?"; opcoes = [10,9,8]; break;
+          case 8: pergunta = "Quanto é 6 - 2?"; opcoes = [4,5,6]; break;
+          case 9: pergunta = "Quanto é 6 - 3?"; opcoes = [2,3,4]; break;
+          case 10: pergunta = "Quanto é 3 + 4?"; opcoes = [6,7,8]; break;
+        }
+
+        let html = `<h2>${pergunta}</h2><div class="alternativas">`;
+        opcoes.forEach(valor => {
+          html += `<button onclick="verificar(${i}, ${valor})">${valor}</button>`;
+        });
+        html += `</div>`;
+        div.innerHTML = html;
+        document.body.appendChild(div);
+      }
+    }
+  </script>
+</body>
+</html>
